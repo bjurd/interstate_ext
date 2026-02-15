@@ -1,3 +1,5 @@
+local interstate = _G.interstate
+
 if not interstate then
 	if util.IsBinaryModuleInstalled("hninterstate") then
 		require"hninterstate"
@@ -15,22 +17,22 @@ end
 --	end
 --end
 
-FindMetaTable"Panel".PostMessage = FindMetaTable"Panel".PostMessage or function(...)
-	if not PANELPostMessage then return end
+-- FindMetaTable"Panel".PostMessage = FindMetaTable"Panel".PostMessage or function(...)
+-- 	if not PANELPostMessage then return end
 
-	return PANELPostMessage(...)
-end
+-- 	return PANELPostMessage(...)
+-- end
 
-FindMetaTable"Panel".ActionSignal = FindMetaTable"Panel".ActionSignal or function(...)
-	if not PANELActionSignal then return end
+-- FindMetaTable"Panel".ActionSignal = FindMetaTable"Panel".ActionSignal or function(...)
+-- 	if not PANELActionSignal then return end
 
-	return PANELActionSignal(...)
-end
-FindMetaTable"Panel".SetPaintFunction = FindMetaTable"Panel".SetPaintFunction or function(...)
-	if not PANELSetPaintFunction then return end
+-- 	return PANELActionSignal(...)
+-- end
+-- FindMetaTable"Panel".SetPaintFunction = FindMetaTable"Panel".SetPaintFunction or function(...)
+-- 	if not PANELSetPaintFunction then return end
 
-	return PANELSetPaintFunction(...)
-end
+-- 	return PANELSetPaintFunction(...)
+-- end
 
 
 menup.include("interstate/bframe.lua")
@@ -105,9 +107,9 @@ concommand.Add("interstate_editor", function()
 		end
 	end
 
-	function f._ToggleMaximize()
+	function f:_ToggleMaximize()
 		if self.BFrame.IsMinimized then
-			selff:ToggleMinimize()
+			self:ToggleMinimize()
 		end
 
 		self:_ToggleMaximize()
@@ -121,18 +123,18 @@ concommand.Add("interstate_editor", function()
 		end
 	end
 
-	f._Restore = f.Restore
-	function f:Restore()
-		--
+	-- f._Restore = f.Restore
+	-- function f:Restore()
+	-- 	--
 
 
-		self:_Restore()
-	end
+	-- 	self:_Restore()
+	-- end
 
 	-- minimize button
-	f.btnMinim:SetDisabled(false)
+	f.btnMinim:SetEnabled(true)
 	f.btnMinim.DoClick = function()
-		self:ToggleMinimize()
+		f:ToggleMinimize()
 	end
 
 	local editor = vgui.Create("ECLuaTab", f)

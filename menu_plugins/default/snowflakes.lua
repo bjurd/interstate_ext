@@ -20,7 +20,7 @@ function snowstorm.makeFlake(x, y, size, speed)
 	flake.sizeHalved = flake.size / 2 --caching
 
 	flake.x = x or math.random(0, ScrW())
-	flake.y = y or 0 - flake.size --make them fall in from the top so they just pop up
+	flake.y = (y or 0) - flake.size --make them fall in from the top so they just pop up
 
 	flake.speed = speed or math.random(snowstorm.flakeSpeed - snowstorm.flakeSpeedVariation, snowstorm.flakeSpeed + snowstorm.flakeSpeedVariation)
 

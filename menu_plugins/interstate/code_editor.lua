@@ -1,4 +1,5 @@
 if not CLIENT then return end
+local interstate = _G.interstate
 
 require("luacheck")
 include("menu_plugins/interstate/filebrowser.lua")
@@ -60,6 +61,7 @@ local EasyChat = {
 	end
 }
 
+--- @class ECLuaTab : DPanel
 local PANEL = {}
 
 local EDITOR_URL = "metastruct.github.io/gmod-monaco"

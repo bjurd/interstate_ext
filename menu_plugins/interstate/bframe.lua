@@ -1,6 +1,6 @@
 -- https://github.com/A1steaksa/CurveLib/blob/a47424a9294516f08997fe3448c5a74a144724e9/lua/libraries/better-derma/bframe.lua
 ---@class (exact) BFrame.Config
----@field TitleBar BFrame.Config.TitleBar 
+---@field TitleBar BFrame.Config.TitleBar
 ---@field DockPadding BFrame.Config.DockPadding The size of the padding between the Resizing Handles, TitleBar, and the docked contents.
 ---@field ResizeHandleSizes BFrame.Config.ResizingSides The size of the padding that allows for resizing of the BFrame.
 ---@field Colors { Focused: BFrame.Config.Colors, Unfocused: BFrame.Config.Colors }
@@ -93,6 +93,9 @@ ConfigMetatable.__index = DefaultConfig
 ---@field IsMaximized boolean
 ---@field LocalDragPos Vector
 ---@field TitleBarClickTime number
+
+--- @class DFrame
+--- @field m_fCreateTime number
 
 ---@class BFrame : DFrame
 ---@field imgIcon  DImage? The BFrame's optional TitleBar Icon
