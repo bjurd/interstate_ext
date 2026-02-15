@@ -29,6 +29,8 @@ end
 
 MsgN()
 
+--- @type MenuPlugins
+--- @diagnostic disable-next-line: lowercase-global, missing-fields
 menup = {} -- We will store menu plugin functions/vars here
 
 function RunFile(Path)
