@@ -1,6 +1,7 @@
 local Lime = Color(127, 255, 0,   255)
 local Aquamarine = Color(127, 255, 212, 255)
 local LightBlue  = Color(72,  209, 204, 255)
+local Red = Color(255, 100, 100, 255)
 
 -- TODO: Improve startup banner, it's not fancy enough
 local message =
@@ -39,8 +40,23 @@ function RunFile(Path)
 	RunString(Code, Path)
 end
 
+local function IsWorkshopPlugin(File)
+	local MenuPlugins = file.Exists("lua/menu_plugins/" .. File, "WORKSHOP")
+	local Modules = file.Exists("lua/menu_plugins/modules/" .. File, "WORKSHOP")
+
+	return MenuPlugins or Modules
+end
+
 for k, fil in pairs(file.Find("lua/menu_plugins/modules/*.lua", "GAME")) do
 	if fil == "init.lua" then continue end
+
+	if IsWorkshopPlugin(fil) then
+		MsgC(Red, "Not loading workshop module ")
+		MsgC(Lime, fil)
+		MsgC(Aquamarine, " ...\n")
+
+		continue
+	end
 
 	MsgC(Aquamarine, "Loading module ")
 	MsgC(Lime, fil)
@@ -53,6 +69,14 @@ end
 
 for k, fil in pairs(file.Find("lua/menu_plugins/*.lua", "GAME")) do
 	if fil == "init.lua" then continue end
+
+	if IsWorkshopPlugin(fil) then
+		MsgC(Red, "Not loading workshop module ")
+		MsgC(Lime, fil)
+		MsgC(Aquamarine, " ...\n")
+
+		continue
+	end
 
 	MsgC(Aquamarine, "Loading module ")
 	MsgC(Lime, fil)
