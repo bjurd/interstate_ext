@@ -1,6 +1,7 @@
 {
 	"Lua.workspace.library": [
-		"${addons}/garrysmod/module/library"
+		"${addons}/garrysmod/module/library",
+		"./interstate.lua"
 	],
 	"Lua.runtime.version": "LuaJIT",
 	"Lua.runtime.special": {
