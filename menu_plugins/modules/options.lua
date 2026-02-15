@@ -12,6 +12,32 @@ function menup.options.addOption(plugin, option, default)
 end
 function menup.options.setOption(plugin, option, value)
 	cookie.Set(prfx..plugin.."_"..option, value)
+
+	if _G.interstate.IsClientValid() and tobool(menup.options.getOption("interstate","client value callbacks")) then
+		local Codens = string.format([[
+			local GAMEMODE = GM or GAMEMODE
+			if not GAMEMODE then
+				if not not istable(gmod) or not isfunction(gmod.GetGamemode) then
+					return
+				end
+
+				GAMEMODE = gmod.GetGamemode()
+			end
+			if not GAMEMODE then
+				return
+			end
+
+			if istable(hook) and isfunction(hook.Call) then
+				hook.Call("InterstateOptionChanged", GAMEMODE, "%s", "%s", "%s")
+			end
+		]], plugin, option, value)
+
+		_G.interstate.RunOnClient(Codens, "[C]")
+	end
+
+	if tobool(menup.options.getOption("interstate","menu value callbacks")) then
+		hook.Call("InterstateOptionChanged", nil, plugin, option, value)
+	end
 end
 function menup.options.getOption(plugin, option)
 	return cookie.GetString(prfx..plugin.."_"..option, "unset")

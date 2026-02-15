@@ -48,6 +48,8 @@ menup.options.addOption("interstate","overrides","false")
 menup.options.addOption("interstate","run before autorun","true")
 menup.options.addOption("interstate","steal","false")
 menup.options.addOption("interstate","block remote lua","false")
+menup.options.addOption("interstate","client value callbacks","false")
+menup.options.addOption("interstate","menu value callbacks","true")
 
 local javascript_escape_replacements = {
 	["\\"] = "\\\\",
