@@ -23,9 +23,9 @@ end
 concommand.Add("menup_setOption", setOption, nil, "Set a menu state option; Format: <plugin> <option> <value>")
 
 local function spewOptions()
-	for plugin, tab in pairs(options) do
+	for plugin, tab in next, options do
 		print(plugin..": ")
-		for option, _ in pairs(tab) do
+		for option, _ in next, tab do
 			print("\t"..option..":\t"..menup.options.getOption(plugin, option))
 		end
 	end

@@ -14,13 +14,15 @@ local message =
 }
 
 local longest = 0
-for k, v in pairs(message) do
-	if v:len() > longest then longest = v:len() end
+for k, v in next, message do
+	if string.len(v) > longest then
+		longest = string.len(v)
+	end
 end
 
 MsgN()
 
-for k, line in pairs(message) do
+for k, line in next, message do
 	for i=1, line:len() do
 		local hue = ((i-1) / longest) * 360
 		MsgC(HSVToColor(hue, 0.375, 1), line:sub(i, i))
@@ -47,7 +49,8 @@ local function IsWorkshopPlugin(File)
 	return MenuPlugins or Modules
 end
 
-for k, fil in pairs(file.Find("lua/menu_plugins/modules/*.lua", "GAME")) do
+local Files = file.Find("lua/menu_plugins/modules/*.lua", "GAME")
+for k, fil in next, Files do
 	if fil == "init.lua" then continue end
 
 	if IsWorkshopPlugin(fil) then
@@ -67,7 +70,8 @@ for k, fil in pairs(file.Find("lua/menu_plugins/modules/*.lua", "GAME")) do
 	RunFile(Path)
 end
 
-for k, fil in pairs(file.Find("lua/menu_plugins/*.lua", "GAME")) do
+Files = file.Find("lua/menu_plugins/*.lua", "GAME")
+for k, fil in next, Files do
 	if fil == "init.lua" then continue end
 
 	if IsWorkshopPlugin(fil) then

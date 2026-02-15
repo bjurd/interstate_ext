@@ -55,7 +55,7 @@ local function validate_fields(fields)
       return
    end
 
-   for key, value in pairs(fields) do
+   for key, value in next, fields do
       if type(key) == "string" then
          if type(value) ~= "table" then
             return
@@ -93,7 +93,7 @@ local function add_fields(def, fields, overwrite, ignore_array_part, default_rea
       return
    end
 
-   for field_name, field_def in pairs(fields) do
+   for field_name, field_def in next, fields do
       if type(field_name) == "string" or not ignore_array_part then
          if type(field_name) ~= "string" then
             field_name = field_def
@@ -190,7 +190,7 @@ local function infer_deep_read_only_statuses(def, read_only)
    local deep_read_only = not def.other_fields or read_only
 
    if def.fields then
-      for _, field_def in pairs(def.fields) do
+      for _, field_def in next, def.fields do
          local field_read_only = read_only
 
          if field_def.read_only ~= nil then

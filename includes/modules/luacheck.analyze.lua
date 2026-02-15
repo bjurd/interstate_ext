@@ -93,7 +93,7 @@ local function propogate_values(line)
    -- Fortunately, performance hit seems small (can be compenstated by inlining a few functions in lexer).
    for i, item in ipairs(line.items) do
       if item.set_variables then
-         for var, value in pairs(item.set_variables) do
+         for var, value in next, item.set_variables do
             if var.line == line then
                -- Values are only live at the item after assignment.
                core_utils.walk_line(line, i + 1, value_propogation_callback, {}, var, value)
@@ -124,7 +124,7 @@ local function closure_propogation_callback(line, _, item, subline)
 
    if live_values then
       for _, var_map in ipairs({subline.accessed_upvalues, subline.mutated_upvalues}) do
-         for var, accessing_items in pairs(var_map) do
+         for var, accessing_items in next, var_map do
             if var.line == line and live_values[var] then
                for _, accessing_item in ipairs(accessing_items) do
                   for _, value in ipairs(live_values[var]) do
@@ -144,7 +144,7 @@ local function closure_propogation_callback(line, _, item, subline)
       local item_var_map = item[action_key]
 
       if item_var_map then
-         for var, setting_items in pairs(subline.set_upvalues) do
+         for var, setting_items in next, subline.set_upvalues do
             if var.line == line and item_var_map[var] then
                for _, setting_item in ipairs(setting_items) do
                   add_resolution(line, item, var, setting_item.set_variables[var], action_key == "mutations")
@@ -170,7 +170,7 @@ local function propogate_closures(line)
    -- Therefore, all accesses and sets inside closures can resolve to each other.
    for _, subline in ipairs(line.lines) do
       for _, var_map in ipairs({subline.accessed_upvalues, subline.mutated_upvalues}) do
-         for var, accessing_items in pairs(var_map) do
+         for var, accessing_items in next, var_map do
             if var.line == line then
                for _, accessing_item in ipairs(accessing_items) do
                   for _, another_subline in ipairs(line.lines) do

@@ -1,4 +1,5 @@
 --loads default menu plugins
-for k, fil in pairs(file.Find("lua/menu_plugins/default/*.lua", "GAME")) do
+local Files = file.Find("lua/menu_plugins/default/*.lua", "GAME")
+for k, fil in next, Files do
 	menup.include("default/"..fil)
 end

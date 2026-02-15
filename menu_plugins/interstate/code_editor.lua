@@ -120,7 +120,7 @@ function PANEL:Init()
 	self.EnvSelector:SetSortItems(false)
 	self.EnvSelector:SetTextColor(color_white)
 
-	for i, data in pairs(ExecutionCallbacks) do
+	for i, data in next, ExecutionCallbacks do
 		self.EnvSelector:AddChoice(data.name, nil, i == 1, data.icon)
 	end
 
@@ -182,7 +182,7 @@ function PANEL:Init()
 	end
 
 	-- menu bar buttons changes
-	for _, panel in pairs(self.MenuBar:GetChildren()) do
+	for _, panel in next, self.MenuBar:GetChildren() do
 		if panel.ClassName == "DButton" then
 			panel:SetTextColor(color_white)
 			panel:SetSize(50, 25)
@@ -237,7 +237,7 @@ function PANEL:Init()
 	self.HTML:AddFunction("gmodinterface", "OnThemesLoaded", function(themes)
 		self.ThemeSelector:Clear()
 
-		for _, theme_name in pairs(themes) do
+		for _, theme_name in next, themes do
 			if cookie.GetString("ECLuaTabTheme") == theme_name then
 				self.ThemeSelector:AddChoice(theme_name, nil, true)
 				self.HTML:QueueJavascript(Format([[gmodinterface.SetTheme("%s");]], theme_name))
@@ -250,7 +250,7 @@ function PANEL:Init()
 	self.HTML:AddFunction("gmodinterface", "OnLanguages", function(languages)
 		self.LangSelector:Clear()
 
-		for _, lang in pairs(languages) do
+		for _, lang in next, languages do
 			self.LangSelector:AddChoice(lang)
 		end
 
@@ -332,7 +332,7 @@ function PANEL:Init()
 
 	self.CodeTabs.CloseTab = function(propsheet, tab, bRemovePanelToo )
 		local iTabIndex = 0
-		for k, v in pairs( propsheet.Items ) do
+		for k, v in next,  propsheet.Items  do
 			if v.Tab == tab then
 				table.remove( propsheet.Items, k )
 				iTabIndex = k
@@ -353,7 +353,7 @@ function PANEL:Init()
 			table.remove(self.ClosedTabHistory, 101)
 		end
 
-		for k, v in pairs(propsheet.tabScroller.Panels) do
+		for k, v in next, propsheet.tabScroller.Panels do
 			if v == tab then
 				table.remove( propsheet.tabScroller.Panels, k )
 				break
@@ -1074,7 +1074,7 @@ function PANEL:AnalyzeTab(tab, editor)
 				end
 
 				--PrintTable(line_panel:GetTable())
-				for _, column in pairs(line_panel.Columns) do
+				for _, column in next, line_panel.Columns do
 					column:SetTextColor(is_error and red_color or orange_color)
 				end
 			--end

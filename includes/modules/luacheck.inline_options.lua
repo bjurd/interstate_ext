@@ -349,7 +349,7 @@ function inline_options.validate_options(events, per_line_opts)
       end
    end
 
-   for line, line_events in pairs(per_line_opts) do
+   for line, line_events in next, per_line_opts do
       for _, event in ipairs(line_events) do
          local valid, invalid_opt = options.validate(options.all_options, event.options)
 

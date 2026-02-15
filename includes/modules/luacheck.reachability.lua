@@ -19,7 +19,7 @@ local function reachability_callback(_, _, item, chstate, nested)
       local item_var_map = item[action_key]
 
       if item_var_map then
-         for var, accessing_nodes in pairs(item_var_map) do
+         for var, accessing_nodes in next, item_var_map do
             if not var.empty then
                local all_possible_values_empty = true
 

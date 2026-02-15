@@ -170,13 +170,13 @@ function LinState:leave_scope()
       end
    end
 
-   for name, label in pairs(left_scope.labels) do
+   for name, label in next, left_scope.labels do
       if not label.used and not pseudo_labels[name] then
          self.chstate:warn_unused_label(label)
       end
    end
 
-   for _, var in pairs(left_scope.vars) do
+   for _, var in next, left_scope.vars do
       var.scope_end = self.lines.top.items.size
    end
 end

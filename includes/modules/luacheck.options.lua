@@ -401,7 +401,7 @@ function options.normalize(opts_stack)
    local res = {}
    res.std = get_final_std(opts_stack)
 
-   for option, default in pairs(scalar_options) do
+   for option, default in next, scalar_options do
       res[option] = get_scalar_opt(opts_stack, option, default)
    end
 
