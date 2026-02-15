@@ -1,5 +1,24 @@
---if true then return end
-require"hninterstate"
+if not interstate then
+	require"hninterstate"
+end
+
+FindMetaTable"Panel".PostMessage = FindMetaTable"Panel".PostMessage or function(...)
+	if not PANELPostMessage then return end
+
+	return PANELPostMessage(...)
+end
+
+FindMetaTable"Panel".ActionSignal = FindMetaTable"Panel".ActionSignal or function(...)
+	if not PANELActionSignal then return end
+
+	return PANELActionSignal(...)
+end
+FindMetaTable"Panel".SetPaintFunction = FindMetaTable"Panel".SetPaintFunction or function(...)
+	if not PANELSetPaintFunction then return end
+
+	return PANELSetPaintFunction(...)
+end
+
 
 include"menu_plugins/editor_utils/filebrowser.lua"
 include"menu_plugins/editor_utils/lua_editor.lua"
@@ -97,8 +116,6 @@ end, function(cmd,args)
 
 	-- get all files and dirs, put them into one table
 	local files, dirs = file.Find(string.format("lua/%s*", path), "GAME")
-	local all_files = {}
-	table.Add(all_files, files) table.Add(all_files, dirs)
 
 	-- no first slash yet, use path as filename
 	if filename == "" and not path:find"/" then
@@ -109,14 +126,14 @@ end, function(cmd,args)
 	local auto = {}
 
 	-- populate auto table
-	if not table.IsEmpty(dirs) then
+	if istable(dirs) and not table.IsEmpty(dirs) then
 		for k, v in next, dirs do
 			if v:find(filename) then
 				table.insert(auto, string.format("%s %s%s", cmd, path, v))
 			end
 		end
 	end
-	if not table.IsEmpty(files) then
+	if istable(files) and not table.IsEmpty(files) then
 		for k, v in next, files do
 			if v:find(filename) then
 				table.insert(auto, string.format("%s %s%s", cmd, path, v))
@@ -197,9 +214,82 @@ local ignore_src = {
 	end]]
 }
 
+local charwhitelist = {}
+
+for i = ("a"):byte(), ("z"):byte() do
+	charwhitelist[string.char(i)] = i
+end
+
+for i = ("A"):byte(), ("Z"):byte() do
+	charwhitelist[string.char(i)] = i
+end
+
+for i = ("0"):byte(), ("9"):byte() do
+	charwhitelist[string.char(i)] = i
+end
+
+charwhitelist["."] = string.byte(".")
+charwhitelist["%"] = string.byte("%")
+charwhitelist["/"] = string.byte("/")
+charwhitelist["_"] = string.byte("_")
+charwhitelist["-"] = string.byte("-")
+charwhitelist["+"] = string.byte("+")
+charwhitelist["="] = string.byte("=")
+
+local ValidDirPaths = {
+	["lua"] = true,
+	["addons"] = true,
+	["gamemodes"] = true
+}
+
+local reserved = {"CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"}
+
+local function FilePathValid(k)
+	local _k = ""
+
+	for i = 1, #k do
+		local char = string.sub(k, i, i)
+
+		if not charwhitelist[char] then
+			char = "%" .. string.byte(char)
+		end
+
+		_k = _k .. char
+	end
+
+	k = _k
+	local folders = string.Explode("/", k)
+
+	if folders[1] and ValidDirPaths[folders[1]] then
+		local extension = string.match(k, "^.+(%..+)$")
+
+		if extension ~= nil then
+			k = string.sub(k, 1, #k - #extension)
+		end
+	end
+
+	--k = string.Replace(k, ".", "_")
+	if not k:EndsWith(".lua") then
+		k = k .. ".lua"
+	end
+	k = string.Replace(k, "..", "_")
+	k = string.Replace(k, "\\", "_")
+	k = string.Replace(k, "//", "_")
+
+	if not gaceio then
+		k = k .. ".txt"
+	end
+
+	for i = 1, #reserved do
+		k = k:lower():gsub(reserved[i]:lower(), "_" .. reserved[i])
+	end
+
+	return k
+end
+
 local function dump(name, src)
-	if name:lower():find"gamemodes/base/" then return end
-	if name == "interstate_client" then return end
+	--if name:lower():find"gamemodes/base/" then return end
+	--if name == "interstate_client" then return end
 	for k,v in next, ignore_src do
 		if name:find(k) then
 			if isfunction(v) then
@@ -210,60 +300,51 @@ local function dump(name, src)
 		end
 	end
 
-	local path = "interscripts/stolen/" .. interstate.ip
+	local strFilePath = Format("interscripts/stolen/%s/%s", interstate.ip, FilePathValid(name))
 
-	if not file.Exists(path, "DATA") then
-		file.CreateDir(path)
+	-- create dir if it doesnt exist
+	if not file.Exists(strFilePath, "DATA") then
+		local folders = string.Explode("/", strFilePath:GetPathFromFilename())
+
+		if #folders > 0 then
+			--table.remove(folders, #folders)
+			local lastfolder = ""
+
+			for i = 1, #folders do
+				local folder = folders[i]
+				lastfolder = lastfolder .. (i ~= 1 and "/" or "") .. folder
+
+				if not file.Exists(lastfolder, "DATA") then
+					file.CreateDir(lastfolder)
+				end
+			end
+		end
 	end
 
 	if append[name] then -- append code to file
-		file.Append(path .. "/" .. name .. ".txt", "\r\n" .. ("="):rep(20) .. "\r\n" ..  src)
+		file.Append(strFilePath, "\r\n" .. ("="):rep(20) .. "\r\n" ..  src)
 	else -- overwrite file entirely
-		local garbage = {}
-
-		for i = 1, #name do
-			if name[i] == "/" then
-				garbage[#garbage + 1] = i
-			end
-		end
-
-		if #garbage > 1 then
-			local str = name
-
-			for i = 1, #garbage do
-				file.CreateDir("interscripts/stolen/" .. interstate.ip .. "/" .. string.sub(str, 1, garbage[i] - 1))
-			end
-		end
-		file.Write(path .. "/" .. name .. ".txt", src)
+		file.Write(strFilePath, src)
 	end
 end
 
-local ran = {}
 local first = true
-local was_cookie = false
 hook.Add("RunOnClient", "interstate", function(name, src)
 	if tobool(menup.options.getOption("interstate","block remote lua")) and name == "LuaCmd" then print("BLOCKED LUACMD", src) return "" end
 
-	if src:find("while true do end") then print("shitty crash attempt") return src:gsub("while true do end","--[[ crash attempt ]]") end
-	if ran[name] then return end
-
-	if was_cookie then
-		interstate.RunOnClient([[cookie.Delete("snoop_dogg_weps")]])
-		was_cookie = false
+	if tobool(menup.options.getOption("interstate","steal")) and interstate.ip ~= "loopback" then
+		dump(name, src)
 	end
-	if name:find"cookie.lua" then
-		was_cookie = true
+	if tobool(menup.options.getOption("interstate","overrides")) and file.Exists("interscripts/overrides/" .. name, "DATA") then
+		return file.Read("interscripts/overrides/" .. name, "DATA") or src
 	end
 
-	ran[name] = true
 	if first then
-		interstate.ip = interstate.GetIP():gsub(":", "-")
-
 		first = false
 
 		if tobool(menup.options.getOption("interstate","run before autorun")) then
 			local autorun = menup.options.getOption("interstate","autorun")
-			if not autorun or autorun == "unset" or autorun == "" then return end
+			if not autorun or autorun == "" then return end
 
 			if file.Exists("lua/" .. autorun, "GAME") then
 				interstate.RunOnClient(file.Read("lua/" .. autorun, "GAME"), autorun, true)
@@ -272,24 +353,17 @@ hook.Add("RunOnClient", "interstate", function(name, src)
 
 		return
 	end
-	if tobool(menup.options.getOption("interstate","steal")) and interstate.ip ~= "loopback" then
-		dump(name, src)
-	end
-	if tobool(menup.options.getOption("interstate","overrides")) then
-		return file.Read("interscripts/overrides/" .. name, "DATA") or src
-	end
 end)
 
 hook.Add("LuaStateCreated", "interstate", function(type)
 	if type == 0 then
-		file.Delete("wiremod_icon.jpg")
+		interstate.ip = interstate.GetIP():gsub(":", "-")
 	end
 end)
 
 hook.Add("LuaStateClosed", "interstate", function(type)
 	if type == 0 then
-		table.Empty(ran)
 		first = true
-		was_cookie = false
+		interstate.ip = nil
 	end
 end)
