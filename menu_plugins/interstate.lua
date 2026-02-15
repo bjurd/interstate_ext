@@ -97,12 +97,14 @@ concommand.Add("interstate_editor", function()
 			f.lasth = f:GetTall()
 			f:SetTall(24)
 			--f:SetLockVerticalSizing(true)
+			f:SetSizable(false)
 			f:SetMinHeight(24)
 		else
 			f.m_bMinimized = false
 
 			f:SetTall(f.lasth)
 			--f:SetLockVerticalSizing(false)
+			f:SetSizable(true)
 			f:SetMinHeight(50)
 		end
 	end
