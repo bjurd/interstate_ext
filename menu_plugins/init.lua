@@ -31,14 +31,22 @@ MsgN()
 
 menup = {} -- We will store menu plugin functions/vars here
 
+function RunFile(Path)
+	local Code = file.Read(Path, "GAME")
+	--interstate.RunOnMenu(Code, Path)
+	RunString(Code, Path)
+end
+
 for k, fil in pairs(file.Find("lua/menu_plugins/modules/*.lua", "GAME")) do
 	if fil == "init.lua" then continue end
 
 	MsgC(Aquamarine, "Loading module ")
 	MsgC(Lime, fil)
 	MsgC(Aquamarine, " ...\n")
-	
-	include("menu_plugins/modules/"..fil)
+
+	-- include("menu_plugins/modules/"..fil)
+	local Path = "lua/menu_plugins/modules/" .. fil
+	RunFile(Path)
 end
 
 for k, fil in pairs(file.Find("lua/menu_plugins/*.lua", "GAME")) do
@@ -47,7 +55,7 @@ for k, fil in pairs(file.Find("lua/menu_plugins/*.lua", "GAME")) do
 	MsgC(Aquamarine, "Loading module ")
 	MsgC(Lime, fil)
 	MsgC(Aquamarine, " ...\n")
-	
+
 	menup.include(fil)
 end
 
