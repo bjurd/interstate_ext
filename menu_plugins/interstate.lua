@@ -1,6 +1,19 @@
 if not interstate then
-	require"hninterstate"
+	if util.IsBinaryModuleInstalled("hninterstate") then
+		require"hninterstate"
+	else
+		MsgC(Color(196,0,0), "hninterstate not installed\n")
+		return
+	end
 end
+
+--if not gameevent then
+--	if util.IsBinaryModuleInstalled("gameevent") then
+--		require("gameevent")
+--	else
+--		MsgC(Color(196,0,0), "gameevent not installed, interstate will crash on quit\n")
+--	end
+--end
 
 FindMetaTable"Panel".PostMessage = FindMetaTable"Panel".PostMessage or function(...)
 	if not PANELPostMessage then return end
@@ -20,10 +33,12 @@ FindMetaTable"Panel".SetPaintFunction = FindMetaTable"Panel".SetPaintFunction or
 end
 
 
-include"menu_plugins/editor_utils/filebrowser.lua"
-include"menu_plugins/editor_utils/lua_editor.lua"
-include"menu_plugins/editor_utils/lua_editor_panels.lua"
-include"menu_plugins/editor_utils/tab_lua.lua"
+menup.include("interstate/bframe.lua")
+menup.include("interstate/code_editor.lua")
+--include"menu_plugins/interstate/filebrowser.lua"
+--include"menu_plugins/interstate/lua_editor.lua"
+--include"menu_plugins/interstate/lua_editor_panels.lua"
+--include"menu_plugins/interstate/tab_lua.lua"
 require"json"
 
 menup.options.addOption("interstate","autorun","proxi.lua")
@@ -56,39 +71,74 @@ function string.JavascriptSafe( str )
 end
 
 concommand.Add("interstate_editor", function()
-	if chatgui and chatgui.Lua and IsValid(chatgui.Lua) then
-		chatgui.Lua:GetParent():MakePopup()
+	if IsValid(interstate.frame) then
+		interstate.frame:MakePopup()
 		return
 	end
 
-	chatgui = chatgui or {}
-
-	local f = vgui.Create("DFrame")
+	local f = vgui.Create("BFrame")
+	interstate.frame = f
+	f:SetTitle("interstate editor")
 	f:SetSize(ScrW() * .75, ScrH() * .75)
 	f:Center()
 	f:SetSizable(true)
 	f:MakePopup()
 
-	f.btnMaxim:SetDisabled(false)
-	function f.btnMaxim:DoClick()
-		if not f.max then
-			f.max = true
-			f.lastx, f.lasty = f:GetPos()
+	function f:ToggleMinimize()
+		if self.BFrame.IsMaximized then
+			self:_ToggleMaximize()
+		end
 
-			f:SetPos(0,0)
-			f:SetSize(ScrW(),ScrH())
-			f:SetDraggable(false)
+		if not f.m_bMinimized then
+			f.m_bMinimized = true
+
+			f.lasth = f:GetTall()
+			f:SetTall(24)
+			f:SetLockVerticalSizing(true)
+			f:SetMinHeight(24)
 		else
-			f.max = false
-			f:SetPos(f.lastx, f.lasty)
-			f:SetSize(ScrW() * .75, ScrH() * .75)
-			f:SetDraggable(true)
+			f.m_bMinimized = false
+
+			f:SetTall(f.lasth)
+			f:SetLockVerticalSizing(false)
+			f:SetMinHeight(50)
 		end
 	end
 
-	chatgui.Lua = vgui.Create("chatbox_lua", f)
-	chatgui.Lua:Dock(FILL)
-end)
+	function f._ToggleMaximize()
+		if self.BFrame.IsMinimized then
+			selff:ToggleMinimize()
+		end
+
+		self:_ToggleMaximize()
+	end
+
+	function f:Minimize()
+		if self.BFrame.IsMinimized then
+			self:Restore()
+		else
+			self:ToggleMinimize()
+		end
+	end
+
+	f._Restore = f.Restore
+	function f:Restore()
+		--
+
+
+		self:_Restore()
+	end
+
+	-- minimize button
+	f.btnMinim:SetDisabled(false)
+	f.btnMinim.DoClick = function()
+		self:ToggleMinimize()
+	end
+
+	local editor = vgui.Create("ECLuaTab", f)
+	interstate.editor = editor
+	editor:Dock(FILL)
+end, nil, nil, { FCVAR_DONTRECORD })
 
 concommand.Add("interstate_openscript_cl", function(_,_,args,argstring)
 	if not interstate.IsClientValid() then Msg"Not in Game\n" return end
@@ -145,13 +195,13 @@ end, function(cmd,args)
 	table.insert(auto, "shouldn't see this")
 
 	return auto
-end)
+end, nil, { FCVAR_DONTRECORD })
 
 concommand.Add("interstate_run_cl", function(_,_,args,argstring)
 	if not interstate.IsClientValid() then Msg"Not in Game\n" return end
 
 	interstate.RunOnClient(argstring,"[C]",true)
-end)
+end, nil, nil, { FCVAR_DONTRECORD })
 
 concommand.Add("interstate_require_cl", function(_,_,args,argstring)
 	if not interstate.IsClientValid() then Msg"Not in Game\n" return end
@@ -192,7 +242,7 @@ end, function(cmd, args)
 	table.insert(auto, "shouldn't see this")
 
 	return auto
-end)
+end, nil, { FCVAR_DONTRECORD })
 
 local append = {
 	Startup = true,

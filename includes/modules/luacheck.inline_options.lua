@@ -1,5 +1,3 @@
-
------------------------------------------------------
 local options = require "luacheck.options" or luacheck.options
 local core_utils = require "luacheck.core_utils" or luacheck.core_utils
 local utils = require "luacheck.utils" or luacheck.utils

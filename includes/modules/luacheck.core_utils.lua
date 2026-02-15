@@ -1,5 +1,3 @@
-
------------------------------------------------------
 local core_utils = {}
 
 -- Calls callback with line, stack_set, index, item, ... for each item reachable from starting item.

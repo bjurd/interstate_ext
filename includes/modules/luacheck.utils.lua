@@ -1,5 +1,3 @@
-
------------------------------------------------------
 local unpack = table.unpack or unpack -- luacheck: compat
 
 local utils = {}

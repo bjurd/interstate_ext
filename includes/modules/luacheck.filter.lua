@@ -1,5 +1,3 @@
-
------------------------------------------------------
 local inline_options = require "luacheck.inline_options" or luacheck.inline_options
 local options = require "luacheck.options" or luacheck.options
 local core_utils = require "luacheck.core_utils" or luacheck.core_utils
@@ -252,11 +250,9 @@ local function get_field_status(opts, warning, depth)
             end
          else
             -- The field is not defined, but it may be okay to index if `other_fields` is true.
-            if not def.other_fields then
-               if not t then
-                 defined = false
-                 break
-               end
+            if not def.other_fields and not t then
+               defined = false
+               break
             end
          end
       end
@@ -324,6 +320,7 @@ local function filter_file_report(report)
          if not filters(opts, issue) then
             if issue.code == "631" then
                issue.max_length = get_max_line_length(opts, issue)
+               issue.column = issue.max_length + 1
             end
 
             if issue.code:match("1[24][23]") then
@@ -429,7 +426,8 @@ local function add_long_line_warnings(report)
          }
 
          for line_number, length in ipairs(file_report.line_lengths) do
-            -- `max_length` field will be added later.
+            -- `max_length` field will be added later,
+            -- `column` will be updated later.
             table.insert(res[i].events, {
                code = "631",
                line = line_number,

@@ -1,3 +1,2 @@
-concommand.Add("lua_run_menu", function(ply, cmd, args, str) 
-	RunStringEx(str, "lua_run_menu") 
-end)
+-- empty to remove this file from existing installs
+-- you, the user, can delete this file

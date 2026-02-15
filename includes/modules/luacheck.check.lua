@@ -1,5 +1,3 @@
-
------------------------------------------------------
 local parser = require "luacheck.parser" or luacheck.parser
 local linearize = require "luacheck.linearize" or luacheck.linearize
 local analyze = require "luacheck.analyze" or luacheck.analyze

@@ -1,5 +1,3 @@
-
------------------------------------------------------
 local function check_whitespace(chstate, lines, line_endings)
    for line_number, line in ipairs(lines) do
       if line ~= "" then

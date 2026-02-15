@@ -1,5 +1,3 @@
-
------------------------------------------------------
 local utils = require "luacheck.utils" or luacheck.utils
 
 local function resolved_to_index(resolution)
