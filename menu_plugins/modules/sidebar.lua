@@ -75,8 +75,8 @@ hook.Add("MenuVGUIReady", "MenuP_CreateSidebar", function()
 	menup.sidebar:MakePopup()
 	menup.sidebar:SetKeyboardInputEnabled(false)
 
-	for plugin, options in pairs(menup.options.getTable()) do
-		for option, _ in pairs(options) do
+	for plugin, options in SortedPairs(menup.options.getTable()) do
+		for option, _ in SortedPairs(options) do
 			menup.sidebar:AddOption(plugin, option)
 		end
 	end
