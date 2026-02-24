@@ -3,6 +3,7 @@ local interstate = _G.interstate
 if not interstate then
 	if util.IsBinaryModuleInstalled("hninterstate") then
 		require"hninterstate"
+		interstate = _G.interstate
 	else
 		MsgC(Color(196,0,0), "hninterstate not installed\n")
 		return
